@@ -12,4 +12,5 @@ public class PlayerStateList : MonoBehaviour
     
     // Invincibility - INI YANG HILANG!
     public bool invincible;
+    public bool healing;
 }

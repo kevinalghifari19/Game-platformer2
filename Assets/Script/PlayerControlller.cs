@@ -63,7 +63,61 @@ public class PlayerController : MonoBehaviour
 
     [Header("Health Settings:")]
     [SerializeField] private int health;
-    [SerializeField] private int maxHealth = 100;
+    [SerializeField] private int maxHealth = 10;
+    [SerializeField] private GameObject bloodSpurt;
+    [SerializeField] private float hitFlashSpeed = 10f;
+    [SerializeField] private float timeToHeal = 1f;
+
+    [Header("Mana Settings:")]
+    [SerializeField] private UnityEngine.UI.Image manaStorage;
+    [SerializeField] private float mana = 0.5f;
+    [SerializeField] private float manaDrainSpeed = 0.2f;
+    [SerializeField] private float manaGain = 0.3f;
+
+    private float healTimer;
+
+    // Health Property
+    public int Health 
+    { 
+        get => health; 
+        set 
+        {
+            if (health != value)
+            {
+                health = value;
+                if (HeartController.Instance != null)
+                    HeartController.Instance.UpdateHeartsUI();
+            }
+        }
+    }
+
+    public int MaxHealth 
+    { 
+        get => maxHealth; 
+        set 
+        {
+            if (maxHealth != value)
+            {
+                maxHealth = value;
+                if (HeartController.Instance != null)
+                    HeartController.Instance.UpdateHeartsUI();
+            }
+        }
+    }
+
+    // Mana Property
+    public float Mana 
+    { 
+        get => mana; 
+        set 
+        {
+            if (mana != value)
+            {
+                mana = Mathf.Clamp(value, 0, 1f); // Clamp antara 0-1
+                UpdateManaUI();
+            }
+        }
+    }
 
     private PlayerStateList pState;
     private Rigidbody2D rb;
@@ -72,8 +126,9 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
     private bool canDash = true;
     private bool dashed;
+    private SpriteRenderer spriteRenderer;
+    private Color originalColor;
 
-    // Singleton
     public static PlayerController Instance;
 
     private void Awake()
@@ -95,6 +150,11 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
         gravity = rb.gravityScale;
         health = maxHealth;
+        mana = 0f; // Mulai dengan mana 0
+        
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+            originalColor = spriteRenderer.color;
     }
 
     void Update()
@@ -105,18 +165,24 @@ public class PlayerController : MonoBehaviour
         if (pState.dashing) return;
 
         Flip();
-        Recoil();
         Move();
         Jump();
         StartDash();
         Attack();
+        Heal();
+    }
+
+    private void FixedUpdate()
+    {
+        if (pState.dashing) return;
+        Recoil();
     }
 
     void GetInputs()
     {
         xAxis = Input.GetAxisRaw("Horizontal");
         yAxis = Input.GetAxisRaw("Vertical");
-        attack = Input.GetMouseButtonDown(0);
+        attack = Input.GetButtonDown("Attack");
     }
 
     void Flip()
@@ -133,13 +199,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void Move()
+   void Move()
+{
+    // BLOKIR movement jika sedang healing
+    if (pState.healing) 
     {
-        if (pState.recoilingX) return;
-
-        rb.linearVelocity = new Vector2(walkSpeed * xAxis, rb.linearVelocity.y);
-        anim.SetBool("Walking", rb.linearVelocity.x != 0 && Grounded());
+        // Stop horizontal movement
+        rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+        anim.SetBool("Walking", false);
+        return;
     }
+
+    if (pState.recoilingX) return;
+
+    rb.linearVelocity = new Vector2(walkSpeed * xAxis, rb.linearVelocity.y);
+    anim.SetBool("Walking", rb.linearVelocity.x != 0 && Grounded());
+}
 
     void StartDash()
     {
@@ -148,11 +223,7 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(Dash());
             dashed = true;
         }
-
-        if (Grounded())
-        {
-            dashed = false;
-        }
+        if (Grounded()) dashed = false;
     }
 
     IEnumerator Dash()
@@ -170,13 +241,9 @@ public class PlayerController : MonoBehaviour
                 groundCheckPoint.position.y + 0.3f,
                 transform.position.z
             );
-
             GameObject effect = Instantiate(dashEffect, spawnPos, transform.rotation);
-
             if (transform.localScale.x < 0)
-            {
                 effect.transform.localScale = new Vector3(-1, 1, 1);
-            }
         }
 
         yield return new WaitForSeconds(dashTime);
@@ -191,55 +258,35 @@ public class PlayerController : MonoBehaviour
         if (pState.recoilingX)
         {
             if (pState.lookingRight)
-            {
                 rb.linearVelocity = new Vector2(-recoilXSpeed, 0);
-            }
             else
-            {
                 rb.linearVelocity = new Vector2(recoilXSpeed, 0);
-            }
 
             if (stepsXRecoiled < recoilXSteps)
-            {
                 stepsXRecoiled++;
-            }
             else
-            {
                 StopRecoilX();
-            }
         }
 
         if (pState.recoilingY)
         {
             rb.gravityScale = 0;
-
             if (yAxis < 0)
-            {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, recoilYSpeed);
-            }
             else
-            {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, -recoilYSpeed);
-            }
 
             if (stepsYRecoiled < recoilYSteps)
-            {
                 stepsYRecoiled++;
-            }
             else
-            {
                 StopRecoilY();
-            }
         }
         else
         {
             rb.gravityScale = gravity;
         }
 
-        if (Grounded())
-        {
-            StopRecoilY();
-        }
+        if (Grounded()) StopRecoilY();
     }
 
     void StopRecoilX()
@@ -282,16 +329,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void SlashEffectAtAngle(GameObject slashEffectPrefab, int effectAngle, Transform attackTransform)
+    void SlashEffectAtAngle(GameObject prefab, int angle, Transform pos)
     {
-        GameObject slashEffect = Instantiate(slashEffectPrefab, attackTransform.position, transform.rotation);
-        slashEffect.transform.eulerAngles = new Vector3(0, 0, effectAngle);
-        slashEffect.transform.localScale = new Vector2(transform.localScale.x, transform.localScale.y);
+        GameObject effect = Instantiate(prefab, pos.position, transform.rotation);
+        effect.transform.eulerAngles = new Vector3(0, 0, angle);
+        effect.transform.localScale = new Vector2(transform.localScale.x, transform.localScale.y);
     }
 
     void Hit(Transform attackTransform, Vector2 attackArea, ref bool recoilDir, float recoilStrength)
     {
-        Collider2D[] objectsToHit = Physics2D.OverlapBoxAll(attackTransform.position, attackArea, 0, attackableLayer);
+        Collider2D[] objectsToHit = Physics2D.OverlapBoxAll(
+            attackTransform.position, 
+            attackArea, 
+            0, 
+            attackableLayer
+        );
 
         if (objectsToHit.Length > 0)
         {
@@ -302,16 +354,29 @@ public class PlayerController : MonoBehaviour
                     Vector2 hitDirection = (transform.position - objectsToHit[i].transform.position).normalized;
                     objectsToHit[i].GetComponent<Enemy>().EnemyHit(damage, hitDirection, recoilStrength);
                     recoilDir = true;
+                    
+                    // Gain mana
+                    Mana += manaGain;
                 }
             }
         }
     }
 
-    // ============ HEALTH SYSTEM ============
+    void UpdateManaUI()
+    {
+        if (manaStorage != null)
+        {
+            manaStorage.fillAmount = mana;
+        }
+    }
+
     public void TakeDamage(float damage)
     {
         if (!pState.invincible)
         {
+            if (bloodSpurt != null)
+                Instantiate(bloodSpurt, transform.position, transform.rotation);
+            
             StartCoroutine(StopTakingDamage(damage));
         }
     }
@@ -319,38 +384,73 @@ public class PlayerController : MonoBehaviour
     IEnumerator StopTakingDamage(float damage)
     {
         pState.invincible = true;
-        health -= Mathf.RoundToInt(damage);
-        ClampHealth();
+        Health -= Mathf.RoundToInt(damage);
         
-        // Trigger animasi hurt jika ada
         if (anim != null)
-        {
             anim.SetTrigger("TakeDamage");
-        }
         
-        yield return new WaitForSeconds(1f);
+        StartCoroutine(FlashPlayer());
+        
+        yield return new WaitForSecondsRealtime(2f);
         
         pState.invincible = false;
     }
 
-    void ClampHealth()
+    IEnumerator FlashPlayer()
     {
-        health = Mathf.Clamp(health, 0, maxHealth);
-    }
-    // ============ END HEALTH SYSTEM ============
-
-    public bool Grounded()
-    {
-        if (Physics2D.Raycast(groundCheckPoint.position, Vector2.down, groundCheckY, whatIsGround)
-        || Physics2D.Raycast(groundCheckPoint.position + new Vector3(groundCheckX, 0, 0), Vector2.down, groundCheckY, whatIsGround)
-        || Physics2D.Raycast(groundCheckPoint.position + new Vector3(-groundCheckX, 0, 0), Vector2.down, groundCheckY, whatIsGround))
+        if (spriteRenderer == null)
         {
-            return true;
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+                originalColor = spriteRenderer.color;
+        }
+
+        float flashDuration = 2f;
+        float flashInterval = 1f / hitFlashSpeed;
+        float elapsed = 0f;
+
+        while (elapsed < flashDuration)
+        {
+            spriteRenderer.color = Color.white;
+            yield return new WaitForSecondsRealtime(flashInterval);
+            spriteRenderer.color = originalColor;
+            yield return new WaitForSecondsRealtime(flashInterval);
+            elapsed += flashInterval * 2;
+        }
+
+        spriteRenderer.color = originalColor;
+    }
+
+    void Heal()
+    {
+        if (Input.GetButton("Healing") && Health < maxHealth && Grounded() && !pState.dashing && Mana > 0)
+        {
+            pState.healing = true;
+            anim.SetBool("Healing", true);
+
+            healTimer += Time.deltaTime;
+            if (healTimer >= timeToHeal)
+            {
+                Health++;
+                healTimer = 0;
+            }
+
+            // Drain mana
+            Mana -= Time.deltaTime * manaDrainSpeed;
         }
         else
         {
-            return false;
+            pState.healing = false;
+            anim.SetBool("Healing", false);
+            healTimer = 0;
         }
+    }
+
+    public bool Grounded()
+    {
+        return Physics2D.Raycast(groundCheckPoint.position, Vector2.down, groundCheckY, whatIsGround) ||
+               Physics2D.Raycast(groundCheckPoint.position + new Vector3(groundCheckX, 0, 0), Vector2.down, groundCheckY, whatIsGround) ||
+               Physics2D.Raycast(groundCheckPoint.position + new Vector3(-groundCheckX, 0, 0), Vector2.down, groundCheckY, whatIsGround);
     }
 
     void Jump()
@@ -396,13 +496,9 @@ public class PlayerController : MonoBehaviour
         }
 
         if (Input.GetButtonDown("Jump"))
-        {
             jumpBufferCounter = jumpBufferFrames;
-        }
         else
-        {
             jumpBufferCounter--;
-        }
     }
 
     private void OnDrawGizmos()
@@ -415,3 +511,4 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireCube(downAttackTransform.position, downAttackArea);
     }
 }
+
