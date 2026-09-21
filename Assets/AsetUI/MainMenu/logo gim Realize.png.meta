@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4785b812037d2184a84cc7a51d4ad979
+guid: 516e04108cf5b60429bf119208336e36
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1621308967580343136
-    second: begron sementara_0
+      213: 1252253959169762876
+    second: logo gim Realize_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: begron sementara_0
+      name: logo gim Realize_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 320
-        height: 180
+        x: 329
+        y: 69
+        width: 942
+        height: 412
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 06b18cb7aeb008610800000000000000
-      internalID: 1621308967580343136
+      spriteID: c36e3e45756e06110800000000000000
+      internalID: 1252253959169762876
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      begron sementara_0: 1621308967580343136
+      logo gim Realize_0: 1252253959169762876
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
