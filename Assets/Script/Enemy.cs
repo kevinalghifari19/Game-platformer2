@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class Enemy : MonoBehaviour
 {
@@ -17,16 +16,13 @@ public class Enemy : MonoBehaviour
     protected bool isRecoiling = false;
     protected Rigidbody2D rb;
     
-    private bool isAttacking = false;
+    // Variabel untuk flip direction
+    protected bool facingRight = true;
 
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        
-        if (PlayerController.Instance != null)
-        {
-            player = PlayerController.Instance;
-        }
+        player = PlayerController.Instance;
     }
 
     protected virtual void Update()
@@ -59,6 +55,35 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    // Fungsi untuk flip enemy menghadap player
+    protected void Flip()
+    {
+        if (player == null) return;
+
+        // Cek posisi player relatif terhadap enemy
+        float distanceToPlayer = player.transform.position.x - transform.position.x;
+
+        // Jika player di kanan dan enemy menghadap kiri, flip ke kanan
+        if (distanceToPlayer > 0 && !facingRight)
+        {
+            FlipDirection();
+        }
+        // Jika player di kiri dan enemy menghadap kanan, flip ke kiri
+        else if (distanceToPlayer < 0 && facingRight)
+        {
+            FlipDirection();
+        }
+    }
+
+    // Fungsi untuk mengubah arah hadap
+    void FlipDirection()
+    {
+        facingRight = !facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
+    }
+
     public virtual void EnemyHit(float _damageDone, Vector2 _hitDirection, float _hitForce)
     {
         health -= _damageDone;
@@ -73,37 +98,17 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Attack()
     {
-        Debug.Log($"[Enemy] Attack called! Player: {player}, Damage: {damage}");
-        
         if (player != null)
         {
             player.TakeDamage(damage);
         }
     }
 
-    // GUNAKAN INI UNTUK DAMAGE BERULANG
-    protected virtual void OnTriggerStay2D(Collider2D other)
+    protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            if (!isAttacking)
-            {
-                StartCoroutine(AttackWithCooldown());
-            }
+            Attack();
         }
-    }
-
-    private IEnumerator AttackWithCooldown()
-    {
-        isAttacking = true;
-        Attack();
-        yield return new WaitForSeconds(2f); 
-        isAttacking = false;
-    }
-
-    // OPSIONAL: Hapus atau biarkan OnTriggerEnter2D
-    protected virtual void OnTriggerEnter2D(Collider2D other)
-    {
-        // Bisa dihapus atau dibiarkan kosong
     }
 }
