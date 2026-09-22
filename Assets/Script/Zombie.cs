@@ -20,6 +20,9 @@ public class Zombie : Enemy
 
         if (!isRecoiling && player != null)
         {
+            // Flip untuk menghadap player
+            Flip();
+            
             // Chase player secara horizontal
             transform.position = Vector2.MoveTowards(
                 transform.position,

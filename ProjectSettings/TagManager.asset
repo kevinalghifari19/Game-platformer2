@@ -41,5 +41,26 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: base
+    uniqueID: 2056463945
+    locked: 0
+  - name: pohon1
+    uniqueID: 449728089
+    locked: 0
+  - name: pohon2
+    uniqueID: 2934769459
+    locked: 0
+  - name: pohon3
+    uniqueID: 1564057633
+    locked: 0
+  - name: pohon4
+    uniqueID: 3166068639
+    locked: 0
+  - name: player dan enemy
+    uniqueID: 2778351027
+    locked: 0
+  - name: floor
+    uniqueID: 1374277105
+    locked: 0
   m_RenderingLayers:
   - Default

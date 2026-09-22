@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4785b812037d2184a84cc7a51d4ad979
+guid: ae9b1daf894fd7649a6252750751350d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1621308967580343136
-    second: begron sementara_0
+      213: -7580406392225735500
+    second: hutan komplit_lmao_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: begron sementara_0
+      name: hutan komplit_lmao_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 320
-        height: 180
+        width: 1920
+        height: 1080
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 06b18cb7aeb008610800000000000000
-      internalID: 1621308967580343136
+      spriteID: 4bcd84a8c8cfcc690800000000000000
+      internalID: -7580406392225735500
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      begron sementara_0: 1621308967580343136
+      hutan komplit_lmao_0: -7580406392225735500
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

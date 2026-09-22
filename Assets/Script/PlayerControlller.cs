@@ -185,19 +185,19 @@ public class PlayerController : MonoBehaviour
         attack = Input.GetButtonDown("Attack");
     }
 
-    void Flip()
+   void Flip()
+{
+    if (xAxis < 0)
     {
-        if (xAxis < 0)
-        {
-            transform.localScale = new Vector2(-1, transform.localScale.y);
-            pState.lookingRight = false;
-        }
-        else if (xAxis > 0)
-        {
-            transform.localScale = new Vector2(1, transform.localScale.y);
-            pState.lookingRight = true;
-        }
+        transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+        pState.lookingRight = false;
     }
+    else if (xAxis > 0)
+    {
+        transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+        pState.lookingRight = true;
+    }
+}
 
    void Move()
 {
@@ -302,7 +302,7 @@ public class PlayerController : MonoBehaviour
         rb.gravityScale = gravity;
     }
 
-    void Attack()
+       void Attack()
     {
         timeSinceAttack += Time.deltaTime;
 
@@ -313,17 +313,21 @@ public class PlayerController : MonoBehaviour
 
             if (yAxis == 0 || (yAxis < 0 && Grounded()))
             {
-                Instantiate(slashEffect, sideAttackTransform.position, transform.rotation);
+                // TAMBAHKAN 'if (slashEffect != null)' DI SINI
+                if (slashEffect != null)
+                    Instantiate(slashEffect, sideAttackTransform.position, transform.rotation);
                 Hit(sideAttackTransform, sideAttackArea, ref pState.recoilingX, recoilXSpeed);
             }
             else if (yAxis > 0)
             {
-                SlashEffectAtAngle(slashEffect, 80, upAttackTransform);
+                if (slashEffect != null)
+                    SlashEffectAtAngle(slashEffect, 80, upAttackTransform);
                 Hit(upAttackTransform, upAttackArea, ref pState.recoilingY, recoilYSpeed);
             }
             else if (yAxis < 0 && !Grounded())
             {
-                SlashEffectAtAngle(slashEffect, -80, downAttackTransform);
+                if (slashEffect != null)
+                    SlashEffectAtAngle(slashEffect, -80, downAttackTransform);
                 Hit(downAttackTransform, downAttackArea, ref pState.recoilingY, recoilYSpeed);
             }
         }
