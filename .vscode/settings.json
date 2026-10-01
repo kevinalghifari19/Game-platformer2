@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Game-platformer2.slnx"
+    "dotnet.defaultSolution": "Game platformer2.slnx"
 }
