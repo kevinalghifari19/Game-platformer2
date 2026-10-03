@@ -283,6 +283,7 @@ GameObject:
   - component: {fileID: 314177369}
   - component: {fileID: 314177371}
   - component: {fileID: 314177370}
+  - component: {fileID: 314177372}
   m_Layer: 5
   m_Name: HealthBarContainer
   m_TagString: Untagged
@@ -307,8 +308,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 22, y: -0.000030517578}
-  m_SizeDelta: {x: 369.549, y: 124.833}
+  m_AnchoredPosition: {x: 13.9470215, y: -18.583984}
+  m_SizeDelta: {x: 377.602, y: 106.249}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &314177370
 MonoBehaviour:
@@ -348,6 +349,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314177368}
   m_CullTransparentMesh: 1
+--- !u!114 &314177372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 314177368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72195cdd7f491b745b2ce68419f45c8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SegmentedHealthBar
+  healthBarImage: {fileID: 1240778841}
+  healthSprites:
+  - {fileID: 8025295414601317866, guid: 3581554359d9f5243a2de04da9fa2047, type: 3}
+  - {fileID: -3358077443481243653, guid: 3581554359d9f5243a2de04da9fa2047, type: 3}
+  - {fileID: 2054848161544290920, guid: 3581554359d9f5243a2de04da9fa2047, type: 3}
+  - {fileID: 959964836461300842, guid: 3581554359d9f5243a2de04da9fa2047, type: 3}
+  - {fileID: -5150067417321103976, guid: 3581554359d9f5243a2de04da9fa2047, type: 3}
+  - {fileID: 1744534402988738473, guid: 3581554359d9f5243a2de04da9fa2047, type: 3}
 --- !u!1 &453736117
 GameObject:
   m_ObjectHideFlags: 0
@@ -946,14 +967,14 @@ MonoBehaviour:
   recoilXSpeed: 50
   recoilYSpeed: 50
   health: 5
-  maxHealth: 10
+  maxHealth: 5
   bloodSpurt: {fileID: 7116901199656900586, guid: ac25cc2927ea66c44818f41f4426edfd, type: 3}
   hitFlashSpeed: 10
   timeToHeal: 1
-  manaStorage: {fileID: 0}
+  manaStorage: {fileID: 1843127931}
   mana: 0
-  manaDrainSpeed: 0.2
-  manaGain: 0.08
+  manaDrainSpeed: 0.3
+  manaGain: 0.02
 --- !u!114 &679810024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1498,8 +1519,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -9.292999, y: -12.762993}
-  m_SizeDelta: {x: 171.613, y: 25.526}
+  m_AnchoredPosition: {x: -45.397, y: -0.000015258789}
+  m_SizeDelta: {x: -90.793, y: 37.417}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1240778841
 MonoBehaviour:
@@ -2290,6 +2311,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 314177369}
+  - {fileID: 1843127930}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2573,7 +2595,7 @@ MonoBehaviour:
   recoilLength: 0.3
   recoilFactor: 0.3
   speed: 2
-  damage: 3
+  damage: 1
   gravityScale: 12
 --- !u!61 &1554405878
 BoxCollider2D:
@@ -1848445,6 +1848467,81 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
+--- !u!1 &1843127929
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1843127930}
+  - component: {fileID: 1843127932}
+  - component: {fileID: 1843127931}
+  m_Layer: 5
+  m_Name: ManaBar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1843127930
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843127929}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1522784475}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -893.36804, y: 389.28683}
+  m_SizeDelta: {x: 69.277, y: 62.92}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1843127931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843127929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 7450005407006277960, guid: e54a3063d50113747a43b9ac32b34192, type: 3}
+  m_Type: 3
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 1
+  m_FillAmount: 0
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1843127932
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843127929}
+  m_CullTransparentMesh: 1
 --- !u!1 &1902058577
 GameObject:
   m_ObjectHideFlags: 0

@@ -85,8 +85,16 @@ public class PlayerController : MonoBehaviour
             if (health != value)
             {
                 health = value;
+                
+                // Update HeartController Lama (Opsional)
                 if (HeartController.Instance != null)
                     HeartController.Instance.UpdateHeartsUI();
+                    
+                // ==========================================
+                // 👇 TAMBAHAN UNTUK HEALTHBAR KOTAK BARU 👇
+                // ==========================================
+                if (SegmentedHealthBar.Instance != null)
+                    SegmentedHealthBar.Instance.UpdateHealthBar();
             }
         }
     }
@@ -101,6 +109,12 @@ public class PlayerController : MonoBehaviour
                 maxHealth = value;
                 if (HeartController.Instance != null)
                     HeartController.Instance.UpdateHeartsUI();
+                    
+                // ==========================================
+                // 👇 TAMBAHAN UNTUK HEALTHBAR KOTAK BARU 👇
+                // ==========================================
+                if (SegmentedHealthBar.Instance != null)
+                    SegmentedHealthBar.Instance.UpdateHealthBar();
             }
         }
     }
@@ -150,7 +164,7 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
         gravity = rb.gravityScale;
         health = maxHealth;
-        mana = 0f; // Mulai dengan mana 0
+        Mana = 0f; // Mulai dengan mana 0
         
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
@@ -186,35 +200,35 @@ public class PlayerController : MonoBehaviour
     }
 
    void Flip()
-{
-    if (xAxis < 0)
     {
-        transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
-        pState.lookingRight = false;
-    }
-    else if (xAxis > 0)
-    {
-        transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
-        pState.lookingRight = true;
-    }
-}
-
-   void Move()
-{
-    // BLOKIR movement jika sedang healing
-    if (pState.healing) 
-    {
-        // Stop horizontal movement
-        rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
-        anim.SetBool("Walking", false);
-        return;
+        if (xAxis < 0)
+        {
+            transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            pState.lookingRight = false;
+        }
+        else if (xAxis > 0)
+        {
+            transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            pState.lookingRight = true;
+        }
     }
 
-    if (pState.recoilingX) return;
+    void Move()
+    {
+        // BLOKIR movement jika sedang healing
+        if (pState.healing) 
+        {
+            // Stop horizontal movement
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+            anim.SetBool("Walking", false);
+            return;
+        }
 
-    rb.linearVelocity = new Vector2(walkSpeed * xAxis, rb.linearVelocity.y);
-    anim.SetBool("Walking", rb.linearVelocity.x != 0 && Grounded());
-}
+        if (pState.recoilingX) return;
+
+        rb.linearVelocity = new Vector2(walkSpeed * xAxis, rb.linearVelocity.y);
+        anim.SetBool("Walking", rb.linearVelocity.x != 0 && Grounded());
+    }
 
     void StartDash()
     {
@@ -302,7 +316,7 @@ public class PlayerController : MonoBehaviour
         rb.gravityScale = gravity;
     }
 
-       void Attack()
+    void Attack()
     {
         timeSinceAttack += Time.deltaTime;
 
@@ -313,7 +327,6 @@ public class PlayerController : MonoBehaviour
 
             if (yAxis == 0 || (yAxis < 0 && Grounded()))
             {
-                // TAMBAHKAN 'if (slashEffect != null)' DI SINI
                 if (slashEffect != null)
                     Instantiate(slashEffect, sideAttackTransform.position, transform.rotation);
                 Hit(sideAttackTransform, sideAttackArea, ref pState.recoilingX, recoilXSpeed);
@@ -388,7 +401,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator StopTakingDamage(float damage)
     {
         pState.invincible = true;
-        Health -= Mathf.RoundToInt(damage);
+        Health -= Mathf.RoundToInt(damage); // Ini akan otomatis memicu update HealthBar
         
         if (anim != null)
             anim.SetTrigger("TakeDamage");
@@ -435,7 +448,7 @@ public class PlayerController : MonoBehaviour
             healTimer += Time.deltaTime;
             if (healTimer >= timeToHeal)
             {
-                Health++;
+                Health++; // Ini akan otomatis memicu update HealthBar
                 healTimer = 0;
             }
 
@@ -515,4 +528,3 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireCube(downAttackTransform.position, downAttackArea);
     }
 }
-
