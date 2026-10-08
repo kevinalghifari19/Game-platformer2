@@ -16,6 +16,11 @@ public class CameraFollow : MonoBehaviour
 
     private void Update()
     {
+        if (PlayerController.Instance == null)
+        {
+            return;
+        }
+        
         transform.position = Vector3.Lerp(
             transform.position,
             PlayerController.Instance.transform.position + offset,
